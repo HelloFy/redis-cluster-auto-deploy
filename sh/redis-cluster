@@ -1,0 +1,47 @@
+#!/bin/bash
+# chkconfig: 345 99 10
+# description: Auto-starts redis cluster
+# /etc/init.d/redis-cluster
+# Redis Cluster auto-start
+# Source function library.
+. /etc/init.d/functions
+# source networking configuration.
+. /etc/sysconfig/network
+RETVAL=0
+
+REDIS_CLUSTER_HOME=/opt/cluster
+REDIS_CLUSTER_USER=root
+start()
+{
+        if [ -f $REDIS_CLUSTER_HOME/bin/startup-cluster.sh ];
+          then
+            echo $"Starting Redis Cluster"
+	    cd ${REDIS_CLUSTER_HOME}/bin
+    	    ./startup-cluster.sh 7000 7005
+            echo " OK"
+        fi
+}
+stop()
+{
+        pkill -9 redis
+}
+
+case "$1" in
+ start)
+        start
+        ;;
+ stop)
+        stop
+        ;;
+
+ restart)
+         echo $"Restaring Redis Cluster"
+         pkill -9 redis
+         start
+         ;;
+ *)
+        echo $"Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+exit $RETVAL
